@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dados do ThingSpeak</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { color: #333; }
+    .data { margin-top: 20px; }
+    .field { margin-bottom: 10px; font-size: 1.2em; }
+  </style>
+</head>
+<body>
+  <h1>Dados do Sensor (ThingSpeak)</h1>
+  <div class="data">
+    <div class="field">Umidade: <span id="field1">Carregando...</span></div>
+    <div class="field">Vibração: <span id="field2">Carregando...</span></div>
+    <div class="field">Inclinação: <span id="field3">Carregando...</span></div>
+  </div>
+
+  <script>
+    const channelID = '2977580';
+    const apiKey = '3QX1ZDAA06RMTWTL'; 
+
+    async function fetchData() {
+      try {
+        const url = `https://api.thingspeak.com/channels/${channelID}/feeds.json?api_key=${apiKey}&results=1`;
+        const response = await fetch(url);
+        const data = await response.json();
+        const feed = data.feeds[0];
+
+        document.getElementById('field1').textContent = feed.field1 || 'N/A';
+        document.getElementById('field2').textContent = feed.field2 || 'N/A';
+        document.getElementById('field3').textContent = feed.field3 || 'N/A';
+
+
+      } catch (error) {
+        console.error('Erro ao buscar dados:', error);
+      }
+    }
+
+    fetchData();
+    // Atualiza a cada 15 segundos
+    setInterval(fetchData, 1000);
+  </script>
+</body>
+</html>
