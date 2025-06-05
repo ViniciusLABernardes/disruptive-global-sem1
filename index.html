@@ -8,6 +8,16 @@
     h1 { color: #333; }
     .data { margin-top: 20px; }
     .field { margin-bottom: 10px; font-size: 1.2em; }
+    .status {
+      margin-top: 30px;
+      font-size: 1.3em;
+      font-weight: bold;
+      padding: 10px;
+      border-radius: 5px;
+      display: inline-block;
+    }
+    .ok { color: green; }
+    .alerta { color: red; }
   </style>
 </head>
 <body>
@@ -17,6 +27,8 @@
     <div class="field">Vibração: <span id="field2">Carregando...</span></div>
     <div class="field">Inclinação: <span id="field3">Carregando...</span></div>
   </div>
+
+  <div id="status" class="status">Carregando status...</div>
 
   <script>
     const channelID = '2977580';
@@ -29,18 +41,36 @@
         const data = await response.json();
         const feed = data.feeds[0];
 
-        document.getElementById('field1').textContent = feed.field1 || 'N/A';
-        document.getElementById('field2').textContent = feed.field2 || 'N/A';
-        document.getElementById('field3').textContent = feed.field3 || 'N/A';
+        const umidade = parseFloat(feed.field1);
+        const tremor = parseFloat(feed.field2);
+        const inclinacao = parseFloat(feed.field3);
 
+        document.getElementById('field1').textContent = isNaN(umidade) ? 'N/A' : umidade + '%';
+        document.getElementById('field2').textContent = isNaN(tremor) ? 'N/A' : tremor;
+        document.getElementById('field3').textContent = isNaN(inclinacao) ? 'N/A' : inclinacao + '°';
+
+        const umidadeAlta = umidade > 80;
+        const inclinacaoPerigosa = inclinacao > 30;
+        const tremorSignificativo = tremor > 5;
+
+        const statusEl = document.getElementById('status');
+
+        if (umidadeAlta || inclinacaoPerigosa || tremorSignificativo) {
+          statusEl.textContent = '⚠️ Alerta: Condições de risco detectadas!';
+          statusEl.className = 'status alerta';
+        } else {
+          statusEl.textContent = '✅ Tudo está bem.';
+          statusEl.className = 'status ok';
+        }
 
       } catch (error) {
         console.error('Erro ao buscar dados:', error);
+        document.getElementById('status').textContent = 'Erro ao obter dados.';
+        document.getElementById('status').className = 'status alerta';
       }
     }
 
     fetchData();
-    // Atualiza a cada 15 segundos
     setInterval(fetchData, 1000);
   </script>
 </body>
