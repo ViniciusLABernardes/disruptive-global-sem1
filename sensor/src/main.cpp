@@ -16,7 +16,7 @@ const char* apiKey = "3QX1ZDAA06RMTWTL";
 #define PIN_INCLINACAO  34
 
 unsigned long lastUpdate = 0;
-const int intervalo = 2000; // 15 segundos
+const int intervalo = 2000; // 2 segundos
 
 int leituraSuave(int pin, int n=10) {
   long soma = 0;
